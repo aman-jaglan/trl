@@ -56,8 +56,15 @@ def load_formatted_sft_dataset(
 
     if dataset_local_directory is None:
         dataset_local_directory = dataset_id_or_path
-    dataset = load_dataset(dataset_local_directory, **dataset_loading_kwargs)
-    train_dataset = dataset[train_split]
+    
+    # Check if train_split contains slice notation
+    if train_split and "[" in train_split and "]" in train_split:
+        # Load dataset directly with the split slice
+        train_dataset = load_dataset(dataset_local_directory, split=train_split, **dataset_loading_kwargs)
+    else:
+        # Original behavior for simple splits
+        dataset = load_dataset(dataset_local_directory, **dataset_loading_kwargs)
+        train_dataset = dataset[train_split]
     if add_dataset_indices:
         train_dataset = add_indices(train_dataset)
     if process_line_fn is not None:

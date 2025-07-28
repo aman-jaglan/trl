@@ -9,7 +9,7 @@ dataset_id_or_path: bespokelabs/Bespoke-Stratos-17k
 dataset_configs:
   - all
 
-# Limit to 7000 samples by setting train_split
+# Use slice notation to limit to 7000 samples
 train_split: "train[:7000]"
 
 completion_only_training: True
