@@ -5,7 +5,7 @@ defaults:
   - _self_
 
 # Use your SFT checkpoint from epoch 5
-model_name_or_path: ${results_dir}/pre_rl_model_qwen3_7k/checkpoint-2185
+model_name_or_path: /home/user/trl/RLT/results/pre_rl_model_qwen3_7k/checkpoint-2190
 
 bf16: true
 
@@ -81,5 +81,5 @@ output_dir: ${results_dir}/gspo_teacher_qwen3
 vllm_port: 8765
 use_vllm: false
 use_vllm_server: true
-vllm_host:
-num_vllm_clients:
+vllm_host: 2dc3509b
+num_vllm_clients: 2

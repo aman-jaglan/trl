@@ -196,15 +196,11 @@ def main(script_args: ScriptArguments):
             "vLLM is required to run the vLLM serve script. Please install it using `pip install vllm`."
         )
 
-    if vllm.__version__ >= "0.8.3":
-        worker_kwargs = dict(
-            worker_extension_cls=(
-                "__main__.WeightSyncWorkerExtension")
-        )
-    else:
-        worker_kwargs = dict(
-            worker_cls=WeightSyncWorker,
-        )
+    # Use import-path strings for worker configuration to satisfy all
+    # vLLM versions and avoid Pydantic byte-serialization issues.
+    worker_kwargs = {
+        "worker_extension_cls": "__main__.WeightSyncWorkerExtension"
+    }
 
     print(f"Initializing server with seed {script_args.seed}")
     llm = LLM(
