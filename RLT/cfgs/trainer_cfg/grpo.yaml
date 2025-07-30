@@ -74,7 +74,6 @@ activate_debugging_logs: false
 
 vllm_server_timeout: 120.0
 vllm_guided_decoding_regex: ~
-loss_type: bnpo
 
 trainer_args:
   _target_: trainers.GRPOConfig
@@ -126,7 +125,6 @@ trainer_args:
   push_to_hub: ${push_to_hub}
   vllm_server_timeout: ${vllm_server_timeout}
   vllm_guided_decoding_regex: ${vllm_guided_decoding_regex}
-  loss_type: ${loss_type}
 
 trainer:
   _target_: trainers.GRPOTrainer
