@@ -78,8 +78,8 @@ wandb_run_name: teacher_grpo_qwen3_epoch5
 output_dir: ${results_dir}/grpo_teacher_qwen3
 
 # VLLM settings (upstream-compatible)
-# keep use_vllm = false to disable vllm entirely or adjust to true if needed
-use_vllm: true
+# use_vllm: false because we're using vllm_server mode
+use_vllm: false
 # vLLM server mode configuration
 use_vllm_server: true
 vllm_host: 2dc3509b
