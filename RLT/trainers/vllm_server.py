@@ -1,8 +1,6 @@
 import argparse
 import logging
 import os
-# Work around vLLM serialization issue with torch.dtype
-os.environ.setdefault("VLLM_ALLOW_INSECURE_SERIALIZATION", "1")
 from dataclasses import dataclass, field
 from typing import Optional, Sequence
 
@@ -198,11 +196,15 @@ def main(script_args: ScriptArguments):
             "vLLM is required to run the vLLM serve script. Please install it using `pip install vllm`."
         )
 
-    # Use import-path strings for worker configuration to satisfy all
-    # vLLM versions and avoid Pydantic byte-serialization issues.
-    worker_kwargs = {
-        "worker_extension_cls": "__main__.WeightSyncWorkerExtension"
-    }
+    if vllm.__version__ >= "0.8.3":
+        worker_kwargs = dict(
+            worker_extension_cls=(
+                "__main__.WeightSyncWorkerExtension")
+        )
+    else:
+        worker_kwargs = dict(
+            worker_cls=WeightSyncWorker,
+        )
 
     print(f"Initializing server with seed {script_args.seed}")
     llm = LLM(
@@ -242,12 +244,6 @@ def main(script_args: ScriptArguments):
                     llm.llm_engine.parallel_config.tensor_parallel_size
                 )
             }
-
-    # Added for compatibility with TRL vLLMClient
-    @app.get("/get_world_size/")
-    async def get_world_size():
-        # World size equals the number of vLLM worker processes (tensor_parallel)
-        return {"world_size": script_args.tensor_parallel_size}
 
     class GenerateRequest(BaseModel):
         prompts: list[str]

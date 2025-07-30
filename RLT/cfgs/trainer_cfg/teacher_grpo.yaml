@@ -16,6 +16,9 @@ student_model_init_kwargs: null
 completion_only_training: false
 disable_student_offloading: false
 
+# Keep all the standard GRPO parameters from the parent config
+# trainer_args and trainer will be inherited from grpo.yaml
+
 trainer:
   _target_: trainers.TeacherGRPOTrainer
   student_model: ${student_model}
