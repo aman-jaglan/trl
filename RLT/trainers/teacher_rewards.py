@@ -385,6 +385,11 @@ class TeacherKLBasedReward(TeacherReward):
 
             think_prefix, think_solution_delimiter = batch[-2:]
             reward_match = 0.0
+            
+            # Quick fix: normalize teacher tags
+            completion = completion.replace("<think>", "<|begin_of_explanation|>")
+            completion = completion.replace("</think>", "<|end_of_explanation|>")
+            
             think_pattern = (
                 start_think_teacher_tag + r"(.*?)" + end_think_teacher_tag
             )
