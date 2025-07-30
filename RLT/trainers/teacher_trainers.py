@@ -6,11 +6,8 @@ from torch import nn
 import torch.nn.functional as F
 from typing import Any, Callable, Optional, Union
 from transformers import PreTrainedTokenizer
-# Prefer upstream TRL GRPOTrainer (with GSPO support); fallback to local implementation if not available
-try:
-    from trl.trainer.grpo_trainer import GRPOTrainer  # type: ignore
-except ImportError:  # Fallback for environments without TRL installed
-    from .grpo import GRPOTrainer  # noqa: F401
+# Use RLT's native GRPO implementation
+from .grpo import GRPOTrainer
 from .grpo_config import GRPOConfig
 from .teacher_base import TeacherReward, TeacherTrainer
 from .utils_trl_15 import prepare_deepspeed
