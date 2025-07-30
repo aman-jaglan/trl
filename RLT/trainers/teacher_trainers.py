@@ -6,7 +6,11 @@ from torch import nn
 import torch.nn.functional as F
 from typing import Any, Callable, Optional, Union
 from transformers import PreTrainedTokenizer
-from .grpo import GRPOTrainer
+# Prefer upstream TRL GRPOTrainer (with GSPO support); fallback to local implementation if not available
+try:
+    from trl.trainer.grpo_trainer import GRPOTrainer  # type: ignore
+except ImportError:  # Fallback for environments without TRL installed
+    from .grpo import GRPOTrainer  # noqa: F401
 from .grpo_config import GRPOConfig
 from .teacher_base import TeacherReward, TeacherTrainer
 from .utils_trl_15 import prepare_deepspeed
@@ -28,7 +32,29 @@ class TeacherGRPOTrainer(GRPOTrainer, TeacherTrainer):
             disable_student_offloading=False,
             **kwargs):
 
+        # Initialize base GRPO trainer (upstream or local)
         GRPOTrainer.__init__(self, *args, **kwargs)
+
+        # ------------------------------------------------------------------
+        # Compatibility shims when using upstream TRL's GRPOTrainer.
+        # Ensure attributes accessed later in this subclass exist.
+        # ------------------------------------------------------------------
+
+        # Store model_init_kwargs (upstream stores only in args)
+        if not hasattr(self, "_stored_model_init_kwargs"):
+            self._stored_model_init_kwargs = getattr(self.args, "model_init_kwargs", {})
+
+        # Ensure offload_untrained_models flag exists
+        if not hasattr(self, "offload_untrained_models"):
+            self.offload_untrained_models = getattr(self.args, "offload_untrained_models", False)
+
+        # Ensure generation temperature attribute exists for reward code.
+        if not hasattr(self, "gen_temperature"):
+            # Upstream trainer keeps temperature in args.temperature
+            self.gen_temperature = getattr(self.args, "temperature", 1.0)
+
+        # ------------------------------------------------------------------
+
         if student_model_init_kwargs is None:
             student_model_init_kwargs = self._stored_model_init_kwargs
 

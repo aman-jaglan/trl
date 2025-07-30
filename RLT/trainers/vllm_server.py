@@ -1,6 +1,8 @@
 import argparse
 import logging
 import os
+# Work around vLLM serialization issue with torch.dtype
+os.environ.setdefault("VLLM_ALLOW_INSECURE_SERIALIZATION", "1")
 from dataclasses import dataclass, field
 from typing import Optional, Sequence
 
@@ -240,6 +242,12 @@ def main(script_args: ScriptArguments):
                     llm.llm_engine.parallel_config.tensor_parallel_size
                 )
             }
+
+    # Added for compatibility with TRL vLLMClient
+    @app.get("/get_world_size/")
+    async def get_world_size():
+        # World size equals the number of vLLM worker processes (tensor_parallel)
+        return {"world_size": script_args.tensor_parallel_size}
 
     class GenerateRequest(BaseModel):
         prompts: list[str]

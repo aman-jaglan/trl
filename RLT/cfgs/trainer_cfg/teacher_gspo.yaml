@@ -19,56 +19,39 @@ student_model_init_kwargs: null
 completion_only_training: false
 disable_student_offloading: false
 
+# Root-level switch referenced inside trainer_args
+shuffle_dataset: true
+
 # Override the trainer_args to include importance_sampling_level
 trainer_args:
   _target_: trl.trainer.grpo_config.GRPOConfig
   importance_sampling_level: ${importance_sampling_level}
-  model_init_kwargs: ${model_init_kwargs}
+  model_init_kwargs: {}
   remove_unused_columns: ${remove_unused_columns}
   max_prompt_length: ${max_prompt_length}
   num_generations: ${num_generations}
   max_completion_length: ${max_completion_length}
   shuffle_dataset: ${shuffle_dataset}
-  ds3_gather_for_generation: ${ds3_gather_for_generation}
+  ds3_gather_for_generation: false
   temperature: ${temperature}
   top_p: ${top_p}
   top_k: ${top_k}
   min_p: ${min_p}
   repetition_penalty: ${repetition_penalty}
-  generation_aggregation_steps: ${generation_aggregation_steps}
   use_vllm: ${use_vllm}
-  vllm_device: ${vllm_device}
   vllm_gpu_memory_utilization: ${vllm_gpu_memory_utilization}
-  vllm_dtype: ${vllm_dtype}
-  vllm_max_model_len: ${vllm_max_model_len}
-  use_ray: ${use_ray}
-  ray_share_training_devices: ${ray_share_training_devices}
-  ray_tensor_parallelism: ${ray_tensor_parallelism}
-  ray_data_parallelism: ${ray_data_parallelism}
-  ray_no_memory_duplication: ${ray_no_memory_duplication}
-  enable_prefix_caching: ${enable_prefix_caching}
-  enforce_eager: ${enforce_eager}
-  vllm_sleep_level: ${vllm_sleep_level}
-  use_vllm_server: ${use_vllm_server}
-  vllm_host: ${vllm_host}
-  vllm_port: ${vllm_port}
-  vllm_group_port: ${vllm_group_port}
-  num_vllm_clients: ${num_vllm_clients}
+  # removed unsupported ray* and vllm_sleep_level
+  vllm_server_port: ${vllm_server_port}
+  generation_batch_size: ${generation_batch_size}
+  steps_per_generation: ${steps_per_generation}
   learning_rate: ${learning_rate}
   beta: ${beta}
+  loss_type: bnpo
   reward_weights: ${reward_weights}
   sync_ref_model: ${sync_ref_model}
   ref_model_mixup_alpha: ${ref_model_mixup_alpha}
   ref_model_sync_steps: ${ref_model_sync_steps}
   log_completions: ${log_completions}
-  save_completions_probability: ${save_completions_probability}
-  artificial_epochs: ${artificial_epochs}
-  backprop_accumulation_steps: ${backprop_accumulation_steps}
-  backprop_accumulation_micro_batch_size: ${backprop_accumulation_micro_batch_size}
-  offload_untrained_models: ${offload_untrained_models}
-  unbias_log_probabilities: ${unbias_log_probabilities}
-  activate_debugging_logs: ${activate_debugging_logs}
-  push_to_hub: ${push_to_hub}
 
 trainer:
   _target_: trainers.TeacherGRPOTrainer
