@@ -25,11 +25,11 @@ logging_steps: 1
 logging_strategy: steps
 
 # Batch size configuration
-train_batch_size: 512
+train_batch_size: 384
 per_device_train_batch_size: 1
 
 # Generation parameters
-num_generations: 4
+num_generations: 8
 temperature: 0.7
 unbias_log_probabilities: true
 
@@ -86,11 +86,11 @@ vllm_server_host: 2dc3509b
 vllm_server_port: 8765
 vllm_port: 8765
 vllm_host: 2dc3509b
-num_vllm_clients: 2
+num_vllm_clients: 1
 
 # Disable model gathering during generation to avoid memory spike
 ds3_gather_for_generation: false
 
 # Generation batch control
-generation_batch_size: 4    # fits memory; 8*4 accumulations keep effective batch
+generation_batch_size: 8    # Must be divisible by num_generations
 steps_per_generation: null
