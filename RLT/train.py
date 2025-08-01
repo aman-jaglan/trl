@@ -4,9 +4,19 @@ import random
 import re
 import hydra
 import torch
+from deepspeed.runtime.zero.config import ZeroStageEnum  # type: ignore
 from omegaconf import DictConfig, OmegaConf
 from datetime import datetime
 from transformers.trainer_utils import get_last_checkpoint
+
+# ---------------------------------------------------------------------------
+# PyTorch 2.6+ defaults to `weights_only=True` in `torch.load`.  DeepSpeed ZeRO
+# checkpoint shards include the enum `ZeroStageEnum`, which is filtered out by
+# the default safe-unpickler.  Register the enum so `torch.load()` can unpickle
+# ZeRO checkpoint files when resuming training.
+# ---------------------------------------------------------------------------
+
+torch.serialization.add_safe_globals([ZeroStageEnum])
 
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 
